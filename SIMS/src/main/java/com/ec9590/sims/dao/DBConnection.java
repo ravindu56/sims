@@ -7,10 +7,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-/**
- * Utility class to manage JDBC connections.
- * Reads credentials from db.properties to avoid hardcoding.
- */
 public class DBConnection {
 
     private static String URL;

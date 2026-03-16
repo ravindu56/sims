@@ -1,4 +1,4 @@
-package com.ec9520.sims.model;
+package com.ec9590.sims.model;
 
 import java.time.LocalDate;
 

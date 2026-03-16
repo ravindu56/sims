@@ -1,4 +1,4 @@
-package com.ec9520.sims;
+package com.ec9590.sims;
 
 /**
  * Hello world!

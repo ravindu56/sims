@@ -31,7 +31,7 @@ jobs:
 
       # ── Step 4: Verify WAR was created ──────────────────────────────
       - name: Verify WAR exists
-        working-directory: SIMS/SIMS
+        working-directory: SIMS/
         run: |
           ls -lh target/*.war
           echo "WAR file created successfully"
@@ -49,9 +49,9 @@ jobs:
 
       # ── Step 7: Deploy new WAR ───────────────────────────────────────
       - name: Deploy WAR to Tomcat
-        working-directory: SIMS/SIMS
+        working-directory: SIMS/
         run: |
-          sudo cp target/SIMS-1.0-SNAPSHOT.war /opt/tomcat/webapps/SIMS.war
+          sudo cp target/SIMS-1.0.war /opt/tomcat/webapps/SIMS.war
           echo "WAR deployed to /opt/tomcat/webapps/SIMS.war"
 
       # ── Step 8: Start Tomcat ─────────────────────────────────────────

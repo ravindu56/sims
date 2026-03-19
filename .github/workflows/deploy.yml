@@ -1,0 +1,74 @@
+name: SIMS CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]          # triggers only on push to main
+  pull_request:
+    branches: [ main ]          # also runs tests on PRs to main
+
+jobs:
+  build-and-deploy:
+    name: Build, Test & Deploy to Tomcat
+    runs-on: self-hosted         # uses your local Ubuntu runner
+
+    steps:
+      # ── Step 1: Checkout source code ────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── Step 2: Set up Java 21 (Temurin) ────────────────────────────
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven            # caches ~/.m2 to speed up builds
+
+      # ── Step 3: Build and run tests ─────────────────────────────────
+      - name: Build with Maven
+        working-directory: SIMS/
+        run: mvn clean package --no-transfer-progress
+
+      # ── Step 4: Verify WAR was created ──────────────────────────────
+      - name: Verify WAR exists
+        working-directory: SIMS/
+        run: |
+          ls -lh target/*.war
+          echo "WAR file created successfully"
+
+      # ── Step 5: Stop Tomcat before deploying ────────────────────────
+      - name: Stop Tomcat
+        run: sudo systemctl stop tomcat
+        continue-on-error: true   # don't fail if tomcat was already stopped
+
+      # ── Step 6: Remove old deployment ───────────────────────────────
+      - name: Remove old deployment
+        run: |
+          sudo rm -rf /opt/tomcat/webapps/SIMS
+          sudo rm -f  /opt/tomcat/webapps/SIMS.war
+
+      # ── Step 7: Deploy new WAR ───────────────────────────────────────
+      - name: Deploy WAR to Tomcat
+        working-directory: SIMS/
+        run: |
+          sudo cp target/SIMS-1.0.war /opt/tomcat/webapps/SIMS.war
+          echo "WAR deployed to /opt/tomcat/webapps/SIMS.war"
+
+      # ── Step 8: Start Tomcat ─────────────────────────────────────────
+      - name: Start Tomcat
+        run: |
+          sudo systemctl start tomcat
+          sleep 10                 # wait for Tomcat to fully start
+
+      # ── Step 9: Verify deployment ────────────────────────────────────
+      - name: Verify deployment
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/SIMS/ \
+            | grep -q "200\|302" \
+            && echo "✅ Deployment successful - SIMS is running" \
+            || echo "⚠️  Check Tomcat logs for errors"
+
+      # ── Step 10: Print Tomcat logs on failure ────────────────────────
+      - name: Show Tomcat logs on failure
+        if: failure()
+        run: tail -50 /opt/tomcat/logs/catalina.out

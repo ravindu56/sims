@@ -80,6 +80,8 @@
     backgroundcolor=\color{codegray},
     basicstyle=\ttfamily\footnotesize,
     breaklines=true,
+    breakindent=0pt,          % add this
+    columns=flexible,         % add this
     frame=single,
     rulecolor=\color{gray!40},
     xleftmargin=15pt,
@@ -122,11 +124,14 @@
 
     \begin{tabular}{ll}
         \textbf{Name}       & : Dayarathna D.D.R.N. \\[0.3cm]
+        \textbf{Index Number} & : 2022/E/033 \\[0.3cm]
         \textbf{Date}       & : 20 March 2026 \\[0.3cm]
         \textbf{Lecturer}   & : Dr.\ J.\ Jananie \\[0.3cm]
         \textbf{Department} & : Computer Engineering \\[0.3cm]
         \textbf{Server}     & : Apache Tomcat 10.1.52 \\[0.3cm]
         \textbf{Language}   & : Java 21 (Temurin), Jakarta EE 6 \\
+        \textbf{Source Code} & : \href{https://github.com/Ravindu56/SIMS}
+                             {\texttt{github.com/Ravindu56/SIMS}} \\
     \end{tabular}
 
     \vfill
@@ -268,7 +273,13 @@ public User validateUser(String username, String password)
 }
 \end{lstlisting}
 
-\noindent\textbf{Screenshot:} \textit{[Insert screenshot of login page]}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{screenshots/01_login_page.png}
+    \caption{Login page -- user enters credentials}
+    \label{fig:login}
+\end{figure}
+
 
 % ── Stage 2 ──────────────────────────────────────────────────────────────────
 \subsection{Stage 2 --- Creation}
@@ -301,8 +312,13 @@ SessionID_ABC123  -->  { loggedInUser: "admin",
                          lastAccessed: 2026-03-20T10:00:00 }
 \end{lstlisting}
 
-\noindent\textbf{Screenshot:} \textit{[Insert screenshot of DevTools
-$\to$ Application $\to$ Cookies, showing JSESSIONID after login]}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{screenshots/02_session_created.png}
+    \caption{DevTools $\to$ Application $\to$ Cookies -- JSESSIONID created after login}
+    \label{fig:creation}
+\end{figure}
+
 
 % ── Stage 3 ──────────────────────────────────────────────────────────────────
 \subsection{Stage 3 --- Transmission}
@@ -338,8 +354,12 @@ set to \texttt{false} during development because the server runs on plain
 HTTP. In a production environment with HTTPS/TLS, this must be \texttt{true}
 to prevent the cookie from being transmitted over unencrypted connections.
 
-\noindent\textbf{Screenshot:} \textit{[Insert screenshot of DevTools
-$\to$ Network $\to$ login POST $\to$ Response Headers, showing Set-Cookie]}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{screenshots/03_set_cookie_header.png}
+    \caption{DevTools $\to$ Network $\to$ login POST $\to$ Response Headers -- Set-Cookie}
+    \label{fig:transmission}
+\end{figure}
 
 % ── Stage 4 ──────────────────────────────────────────────────────────────────
 \subsection{Stage 4 --- Persistence}
@@ -363,9 +383,13 @@ Welcome, <strong><%= session.getAttribute("loggedInUser") %></strong>
 <a href="<%= request.getContextPath() %>/logout">Logout</a>
 \end{lstlisting}
 
-\noindent\textbf{Screenshot:} \textit{[Insert screenshot of View Students
-page showing ``Welcome, admin'' and DevTools $\to$ Network $\to$
-Request Headers showing Cookie being sent]}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{screenshots/04_persistence.png}
+    \caption{View Students page showing ``Welcome, admin'' -- cookie sent in Request Headers}
+    \label{fig:persistence}
+\end{figure}
+
 
 % ── Stage 5 ──────────────────────────────────────────────────────────────────
 \subsection{Stage 5 --- Validation}
@@ -413,9 +437,13 @@ public class SessionFilter implements Filter {
 }
 \end{lstlisting}
 
-\noindent\textbf{Screenshot:} \textit{[Insert screenshot showing that
-accessing \texttt{/viewStudents} directly without login redirects to
-\texttt{login.jsp}]}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{screenshots/05_validation_redirect.png}
+    \caption{Accessing \texttt{/viewStudents} without login redirects to login page}
+    \label{fig:validation}
+\end{figure}
+
 
 % ── Stage 6 ──────────────────────────────────────────────────────────────────
 \subsection{Stage 6 --- Termination}
@@ -465,9 +493,13 @@ Set-Cookie: JSESSIONID=; Max-Age=0; Path=/SIMS
 Location: http://localhost:8080/SIMS/login.jsp
 \end{lstlisting}
 
-\noindent\textbf{Screenshot:} \textit{[Insert screenshot of DevTools
-$\to$ Network $\to$ logout $\to$ Response Headers showing
-\texttt{Max-Age=0} cookies]}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{screenshots/06_termination.png}
+    \caption{DevTools $\to$ Network $\to$ logout -- Set-Cookie with Max-Age=0}
+    \label{fig:termination}
+\end{figure}
+
 
 % ════════════════════════════════════════════════════════════════════════════
 \section{Session Lifecycle Diagram}
@@ -475,39 +507,39 @@ $\to$ Network $\to$ logout $\to$ Response Headers showing
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[
-    node distance=1.4cm,
+    node distance=2.0cm,              % increased from 1.4cm
     box/.style={rectangle, rounded corners, draw=uojblue,
                 fill=blue!8, text width=5.5cm,
-                align=center, minimum height=0.9cm,
+                align=center, minimum height=0.2cm,
                 font=\small},
     decision/.style={diamond, draw=orange!80, fill=orange!15,
-                     text width=2.8cm, align=center,
+                     text width=2.5cm, align=center,
+                     aspect=2,        % makes diamond wider
                      font=\small\bfseries},
     arrow/.style={-{Stealth}, thick, color=uojblue}
 ]
 
-\node (login)    [box]                          {1. LOGIN\\User submits credentials};
-\node (validate) [box, below of=login]          {UserDAO validates against DB};
-\node (dec)      [decision, below of=validate, yshift=-0.5cm]  {Valid?};
-\node (create)   [box, below of=dec, yshift=-0.5cm]
-                                                {2. CREATION\\Session created,\\loggedInUser set};
-\node (transmit) [box, below of=create]         {3. TRANSMISSION\\\texttt{Set-Cookie: sessionid=XYZ}\\HttpOnly; Max-Age=1800};
-\node (persist)  [box, below of=transmit]       {4. PERSISTENCE\\Browser sends cookie\\on every request};
-\node (filter)   [box, below of=persist]        {5. VALIDATION\\SessionFilter checks\\session on every page};
-\node (logout)   [box, below of=filter]         {6. TERMINATION\\\texttt{session.invalidate()}\\Cookie Max-Age=0};
+\node (login)    [box]                                {1. LOGIN\\User submits credentials};
+\node (validate) [box, below of=login]                {UserDAO validates against DB};
+\node (dec)      [decision, below of=validate,
+                  yshift=-0.5cm]                      {Valid?};
+\node (create)   [box, below of=dec, yshift=-0.8cm]   {2. CREATION\\Session created,\\loggedInUser set};
+\node (transmit) [box, below of=create, yshift=-0.3cm]{3. TRANSMISSION\\\texttt{Set-Cookie: sessionid=XYZ}\\HttpOnly; Max-Age=1800};
+\node (persist)  [box, below of=transmit]             {4. PERSISTENCE\\Browser sends cookie\\on every request};
+\node (filter)   [box, below of=persist]              {5. VALIDATION\\SessionFilter checks\\session on every page};
+\node (logout)   [box, below of=filter, yshift=-0.3cm]               {6. TERMINATION\\\texttt{session.invalidate()}\\Cookie Max-Age=0};
 
-\node (error)    [box, right of=dec, xshift=4cm, fill=red!10, draw=red!60]
-                                                {Show error\\on login.jsp};
+\node (error)    [box, right of=dec, xshift=4.5cm,
+                  fill=red!10, draw=red!60]            {Show error\\on login.jsp};
 
 \draw [arrow] (login)    -- (validate);
 \draw [arrow] (validate) -- (dec);
-\draw [arrow] (dec)      -- node[left]{\small yes} (create);
+\draw [arrow] (dec)      -- node[left]{\small yes}  (create);
 \draw [arrow] (dec)      -- node[above]{\small no}  (error);
 \draw [arrow] (create)   -- (transmit);
 \draw [arrow] (transmit) -- (persist);
 \draw [arrow] (persist)  -- (filter);
 \draw [arrow] (filter)   -- node[right]{\small logout} (logout);
-
 \end{tikzpicture}
 \caption{Complete Session Management Lifecycle in SIMS}
 \end{figure}
